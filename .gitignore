@@ -1,0 +1,14 @@
+.idea/
+*.iml
+*.pyc
+*.jar
+*.zip
+*.tar
+*.tar.gz
+*.bzip2
+data/
+tmp/
+logs/
+*.logs
+build/
+
