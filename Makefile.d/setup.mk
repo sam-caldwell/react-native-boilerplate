@@ -1,8 +1,17 @@
 .PHONY: setup
-
 THIS_DIRECTORY=$(shell basename $$(pwd -P))
+APP_NAME=$(shell basename $$(pwd -P))
 
-setup: setup_mac setup_react_client
+pre-check:
+ifneq ("$(wildcard ./setup.log)","")
+	@echo ""
+	@echo "setup already run.  use setup_clean first"
+	@echo ""
+	exit 1
+endif
+
+setup: pre-check setup_mac setup_react_client
+	@echo "$$(date)" > setup.log
 	@echo "setup complete"
 
 setup_linux: setup_nix_env_vars
@@ -11,17 +20,29 @@ setup_linux: setup_nix_env_vars
 setup_windows:
 	@echo "windows not implemented"
 
-setup_mac: setup_nix_env_vars
-	command -v brew --version || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+setup_mac: setup_mac_client setup_mac_server
+
+setup_brew:
+	@/usr/bin/command -v brew --version || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	@echo "brew installed"
+
+setup_mac_server: setup_brew
+	@/usr/bin/command -v docker || brew install docker
+	@echo "docker installed"
+	@/usr/bin/command -v docker-compose || brew install docker-compose
+	@echo "docker-compose installed"
+
+setup_mac_client: setup_brew setup_nix_env_vars
+	@command -v brew --version || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	@echo "brew is installed"
 	@brew update
 	@command -v node --version || brew install node
 	@brew install watchman
 	# ios specifics
-	@xcode-select --install &> /dev/null || sudo xcode-select --switch /Library/Developer/CommandLineTools/
+	@xcode-select --install &> /dev/null || sudo sudo xcode-select --switch /Applications/Xcode.app
 	@sudo gem install cocoapods
 	@sudo gem install xcode-install
-	@xcversion simulators --install='iOS 14.4'
+	@xcversion simulators --install='iOS 14.4' || true
 	# android specifics
 	@brew install --cask adoptopenjdk/openjdk/adoptopenjdk11 || brew reinstall -f adoptopenjdk11
 
@@ -49,9 +70,6 @@ setup_react_client:
 	@echo "Project: '${THIS_DIRECTORY}' (client)"
 	@(\
 	cd client;\
-	npx react-native init ${THIS_DIRECTORY} --template react-native-template-typescript || true;\
-	cd ./simpleChat/ios && pod install;\
+	npx react-native init ${APP_NAME} || true;\
+	cd ./${APP_NAME}/ios && pod install;\
 	)
-
-clean_react_client:
-	rm -rf client/simpleChat

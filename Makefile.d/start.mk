@@ -1,31 +1,34 @@
 .Phony: start start-server start-client start-android start-ios
 
-start: start-server start-client
-	@echo "client and server are started."
+yarn-install: stop-client
+	@(\
+		cd client/${APP_NAME} &&\
+		rm -rf node_modules &&\
+		yarn install &&\
+		watchman watch-del-${myArray[@]} &&\
+		sh -c 'yarn start --reset-cache &' &&\
+        rm -rf /tmp/metro-*;\
+	)
 
 start-server:
 	@echo "not implemented"
 	#ToDo: implement using Docker Compose
 
-start-client: start-ios start-android start-react
-	@echo "client is started"
-
-
-start-react:
+start-react: yarn-install
 	@(\
-		cd client/simpleChat;\
+		cd client/${APP_NAME};\
 		npx react-native start;\
 	)
 
-start-ios:
+start-ios: yarn-install
 	@(\
-		cd client/simpleChat;\
+		cd client/${APP_NAME};\
 		sh -c 'sleep 5; npx react-native run-ios &';\
 	)
 
-start-android:
+start-android: yarn-install
 	@(\
-		cd client/simpleChat;\
+		cd client/${APP_NAME};\
 		emulator -avd Pixel_XL_API_27 &; \
 		sh -c 'sleep 5; npx react-native run-android &';\
 	)
