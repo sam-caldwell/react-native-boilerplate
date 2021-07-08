@@ -1,6 +1,5 @@
 .PHONY: setup
 THIS_DIRECTORY=$(shell basename $$(pwd -P))
-APP_NAME=$(shell basename $$(pwd -P))
 
 setup: pre-check rename-repo setup_mac setup_react_client
 	@echo "finishing setup"
@@ -14,6 +13,7 @@ setup_windows:
 	@echo "windows not implemented"
 
 setup_mac: setup_mac_client setup_mac_server
+	@echo "setup mac completed"
 
 setup_brew:
 	@/usr/bin/command -v brew --version || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -30,14 +30,15 @@ setup_mac_client: setup_brew setup_nix_env_vars
 	@echo "brew is installed"
 	@brew update
 	@command -v node --version || brew install node
-	@brew install watchman
-	# ios specifics
+	@brew install watchman || brew reinstall watchman
+	@echo "install ios specifics"
 	@xcode-select --install &> /dev/null || sudo sudo xcode-select --switch /Applications/Xcode.app
 	@sudo gem install cocoapods
 	@sudo gem install xcode-install
 	@xcversion simulators --install='iOS 14.4' || true
-	# android specifics
+	@echo "install android specifics"
 	@brew install --cask adoptopenjdk/openjdk/adoptopenjdk11 || brew reinstall -f adoptopenjdk11
+	@echo "setup_mac_client finished."
 
 setup_nix_env_vars:
 	@echo "cleanup any existing environment variables"
@@ -60,7 +61,9 @@ setup_nix_env_vars:
 	@echo "...setup_nix_env_vars (done)"
 
 setup_react_client:
-	@echo "Project: '${THIS_DIRECTORY}' (client)"
+	APP_NAME=$(shell basename $$(pwd -P))
+	@echo "setup_react_client starting..."
+	@echo "Project: '${APP_NAME}' (client)"
 	@(\
 	cd client;\
 	npx react-native init ${APP_NAME} || true;\
