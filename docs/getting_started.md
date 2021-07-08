@@ -5,3 +5,5 @@ Getting Started
 2. Clone this repository to `~/git/`
 3. Open a terminal and navigate to the local repository directory.
 4. Execute `make setup`to install all prerequisites for the supported environments.
+5. The `make setup` will create the full platform (react-native client and golang server).
+6. The `make clean_setup` will nuke the environment and allow you to start over.
