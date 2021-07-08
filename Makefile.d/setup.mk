@@ -2,15 +2,7 @@
 THIS_DIRECTORY=$(shell basename $$(pwd -P))
 APP_NAME=$(shell basename $$(pwd -P))
 
-pre-check:
-ifneq ("$(wildcard ./setup.log)","")
-	@echo ""
-	@echo "setup already run.  use setup_clean first"
-	@echo ""
-	exit 1
-endif
-
-setup: pre-check setup_mac setup_react_client
+setup: pre-check rename-repo setup_mac setup_react_client
 	@echo "$$(date)" > setup.log
 	@echo "setup complete"
 
