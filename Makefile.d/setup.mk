@@ -3,6 +3,7 @@ THIS_DIRECTORY=$(shell basename $$(pwd -P))
 APP_NAME=$(shell basename $$(pwd -P))
 
 setup: pre-check rename-repo setup_mac setup_react_client
+	@echo "finishing setup"
 	@echo "$$(date)" > setup.log
 	@echo "setup complete"
 
