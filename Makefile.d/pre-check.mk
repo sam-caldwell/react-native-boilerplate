@@ -4,7 +4,7 @@ pre-check:
 	@echo "pre-check says..."
 ifneq ("$(wildcard ./setup.log)","")
 	@echo ""
-	@echo "setup already run.  use setup_clean first"
+	@echo "setup already run.  use clean_setup first"
 	@echo ""
 	exit 1
 else

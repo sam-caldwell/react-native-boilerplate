@@ -1,7 +1,8 @@
 .PHONY: clean
 
 clean_react_client:
-	@rm -rf client/${APP_NAME}
+	@rm -rf client
+	@mkdir client &> /dev/null || true
 	@rm -rf /Users/scaldwell/Library/Caches/CocoaPods
 
 
