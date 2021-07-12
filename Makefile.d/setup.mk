@@ -1,5 +1,6 @@
 .PHONY: setup
 THIS_DIRECTORY=$(shell basename $$(pwd -P))
+PROJECT_NAME=$(shell basename $$(pwd -P))
 
 setup: pre-check setup_mac setup-repo
 	@echo "finishing setup"
@@ -61,33 +62,18 @@ setup_nix_env_vars:
 	@echo "...setup_nix_env_vars (done)"
 
 setup-repo:
-	@echo "rename-repo starting"
-	@read -p "Enter the name of your project: " REPO_NAME;\
-	echo "creating $${REPO_NAME}" && \
-	cd .. && \
-	rsync -avr --exclude=.git react-native-boilerplate/* $${REPO_NAME} && \
-	cd $${REPO_NAME} && \
-	pwd && \
-	echo "removing the old repo" && \
-	rm -rf .git && \
-	echo "remove setup.mk Makefile" && \
-	rm ../$${REPO_NAME}/Makefile.d/setup.mk && \
-	echo "configuring a new local git repo" && \
-	git config --global init.defaultBranch main && \
-	git init . && \
-	echo "a new local git repo is created for '$${REPO_NAME}'" && \
+	echo "remove old repo"
+	git remote rm origin
+	rm -rf .git
+	rm -rf ./Makefile.d/setup.mk
+	echo "configuring a new local git repo"
+	git config --global init.defaultBranch main
+	git init .
+	echo "a new local git repo is created"
 	git add -A . && \
 	git commit -m "initial commit" && \
-	echo "You'll need to create the repo for $${REPO_NAME} in github/bitbucket and push" && \
-	echo "current directory:" && \
-	echo "setup_react_client starting..." && \
 	cd client && \
-	echo "Project: '$${REPO_NAME}' (client)" && \
-	npx react-native init $${REPO_NAME} && \
-	cd $${REPO_NAME}/ios && pod install && \
-	echo "setup-repo done" && \
-	echo "" && \
-	echo "*** DO NOT CODE IN THIS DIRECTORY." && \
-	echo "*** Switch to $${REPO_NAME}" && \
-	echo "" && \
-	exit 0
+	echo "Project: '$${PROJECT_NAME}' (client)" && \
+	npx react-native init $${PROJECT_NAME} && \
+	cd $${PROJECT_NAME}/ios && pod install && \
+	echo "setup-repo done"
